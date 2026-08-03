@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thank You | Ashlar Tattva</title>
+<meta name="description" content="Your details are with the Ashlar Tattva sales team.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#16494d">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400&family=Libre+Baskerville:wght@400;700&family=Manrope:wght@700&family=Rubik:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+<style>
+  .ty { min-height: 100svh; display: grid; place-items: center; padding: 70px 0; background: var(--cream); }
+  .ty-card {
+    max-width: 640px; background: #fff; border: 1px solid var(--line-2); border-radius: 4px;
+    box-shadow: var(--card); padding: clamp(30px, 5vw, 56px); text-align: center;
+  }
+  .ty-tick {
+    width: 68px; height: 68px; margin: 0 auto 22px; border-radius: 50%;
+    display: grid; place-items: center; background: rgba(242, 128, 33, .12); color: var(--orange);
+  }
+  .ty-tick svg { width: 32px; height: 32px; }
+  .ty h1 { font-size: clamp(1.9rem, 4vw, 2.8rem); margin-bottom: 12px; }
+  .ty p.say { color: #4d5a5b; max-width: 48ch; margin-inline: auto; }
+  .ty-btns { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 30px; }
+  .ty-reach { display: flex; flex-wrap: wrap; gap: 10px 32px; justify-content: center; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--line); font-size: .9rem; }
+  .ty-reach a { color: var(--teal); font-weight: 400; }
+  .ty-reach a:hover { color: var(--orange-dark); }
+  .ty-rera { margin-top: 22px; font-size: .72rem; color: #9aa2a2; line-height: 1.7; }
+</style>
+</head>
+<body>
+
+<section class="ty">
+  <div class="wrap">
+    <div class="ty-card">
+      <div class="ty-tick">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5.2 5.2L20 7"/></svg>
+      </div>
+
+      <p class="eyebrow">Registration Received</p>
+      <h1 id="tyHead">Thank You</h1>
+      <p class="say" id="tySay">
+        Your details have been received. Our sales team will get in touch shortly with complete
+        information on Ashlar Tattva — pricing, availability and current construction status.
+      </p>
+
+      <div class="ty-btns">
+        <a class="btn btn-orange" href="https://wa.me/919119117582?text=Hi%2C%20I%20just%20registered%20for%20Ashlar%20Tattva." target="_blank" rel="noopener">Chat On WhatsApp</a>
+        <a class="btn btn-teal" href="index.html">Back To Home</a>
+      </div>
+
+      <div class="ty-reach">
+        <span>Sales: <a href="tel:+919119117582">911 911 7582</a></span>
+        <span>Email: <a href="mailto:sales@ashlarspaces.com">sales@ashlarspaces.com</a></span>
+      </div>
+
+      <p class="ty-rera">
+        Ashlar Tattva · Titwala West · MahaRERA A Wing P51700027399 · B Wing PR1330002600631
+      </p>
+    </div>
+  </div>
+</section>
+
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var name = (q.get('name') || '').trim().replace(/[^\p{L}\s'-]/gu, '').slice(0, 30);
+  var intent = (q.get('intent') || '').trim().slice(0, 60);
+
+  if (name) document.getElementById('tyHead').textContent = 'Thank You, ' + name;
+
+  var say = document.getElementById('tySay');
+  var plan = intent.match(/floor plan\s*[—-]\s*(.+)/i);
+
+  if (plan) {
+    say.textContent = 'The ' + plan[1] + ' floor plan is on its way to your inbox. Our sales team will ' +
+      'call shortly to take you through the layout and current availability.';
+  } else if (/brochure/i.test(intent)) {
+    say.textContent = 'The Ashlar Tattva brochure is on its way to your inbox. Our sales team will ' +
+      'follow up shortly with pricing and availability.';
+  } else if (/site visit/i.test(intent)) {
+    say.textContent = 'Your site visit request has been received. Our sales team will call shortly to ' +
+      'confirm a convenient date and time at Vasundri Road, Titwala West.';
+  }
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1150" width="1000" height="1150" role="img" aria-label="Overview">
+  <defs>
+    <linearGradient id="s" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0%" stop-color="#d8cec2"/><stop offset="55%" stop-color="#bfb3a4"/><stop offset="100%" stop-color="#a2968a"/>
+    </linearGradient>
+    <linearGradient id="h" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity=".16"/>
+    </linearGradient>
+  </defs>
+  <rect width="1000" height="1150" fill="url(#s)"/>
+  <circle cx="780" cy="230" r="130" fill="#fff" opacity=".16"/>
+  <g opacity=".2" fill="#3b4547">
+    <rect x="80" y="632" width="70" height="1150"/>
+    <rect x="170" y="506" width="90" height="1150"/>
+    <rect x="290" y="690" width="60" height="1150"/>
+    <rect x="370" y="575" width="80" height="1150"/>
+  </g>
+  <path d="M0 851 Q 450 759, 1000 920 L 1000 1150 L 0 1150 Z" fill="#55635c" opacity=".26"/>
+  <rect width="1000" height="1150" fill="url(#h)"/>
+  <g transform="translate(36,1057)">
+    <rect x="0" y="0" width="332" height="57" rx="10" fill="#0e3235" opacity=".55"/>
+    <text x="20" y="38" font-family="Helvetica,Arial,sans-serif" font-size="26" fill="#ffffff" opacity=".82" letter-spacing="1">Overview · 1000×1150</text>
+  </g>
+</svg>
