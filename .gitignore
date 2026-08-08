@@ -9,3 +9,7 @@ Thumbs.db
 # Client's internal reference deck — this repo is public.
 # Delete this line if you want the brief versioned too.
 Ashlar landing Page Reference.pdf
+
+# Raw image drop from the client — 2.6 GB of print artwork, .ai and .zip
+# sources. The web-ready derivatives live in assets/img/ and are committed.
+ashlar tattva landing page/
