@@ -13,10 +13,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400&family=Libre+Baskerville:wght@400;700&family=Manrope:wght@700&family=Rubik:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/styles.css">
 <style>
-  .ty { min-height: 100svh; display: grid; place-items: center; padding: 70px 0; background: var(--cream); }
+  .ty { min-height: 100svh; display: grid; place-items: center; padding: 70px 0; background: var(--surface-warm); }
   .ty-card {
-    max-width: 640px; background: #fff; border: 1px solid var(--line-2); border-radius: 4px;
-    box-shadow: var(--card); padding: clamp(30px, 5vw, 56px); text-align: center;
+    /* .wrap around this is 1220px wide, so the card needs its own auto margins
+       or it sits hard against the left gutter */
+    max-width: 640px; margin-inline: auto;
+    background: #fff; border: 1px solid var(--on-warm); border-radius: 5px;
+    box-shadow: var(--sh); padding: clamp(30px, 5vw, 56px); text-align: center;
   }
   .ty-tick {
     width: 68px; height: 68px; margin: 0 auto 22px; border-radius: 50%;
@@ -24,12 +27,12 @@
   }
   .ty-tick svg { width: 32px; height: 32px; }
   .ty h1 { font-size: clamp(1.9rem, 4vw, 2.8rem); margin-bottom: 12px; }
-  .ty p.say { color: #4d5a5b; max-width: 48ch; margin-inline: auto; }
+  .ty p.say { color: var(--body); max-width: 48ch; margin-inline: auto; }
   .ty-btns { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 30px; }
   .ty-reach { display: flex; flex-wrap: wrap; gap: 10px 32px; justify-content: center; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--line); font-size: .9rem; }
   .ty-reach a { color: var(--teal); font-weight: 400; }
   .ty-reach a:hover { color: var(--orange-dark); }
-  .ty-rera { margin-top: 22px; font-size: .72rem; color: #9aa2a2; line-height: 1.7; }
+  .ty-rera { margin-top: 22px; font-size: .78rem; color: var(--grey); line-height: 1.7; }
 </style>
 </head>
 <body>
