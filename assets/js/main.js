@@ -258,8 +258,22 @@
     else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); }
   });
 
-  /* ── tag which CTA produced the lead ────────────────────── */
+  /* ── CTAs that open the popup instead of scrolling to the form ── */
+  $$('.js-cta').forEach(function (b) {
+    b.addEventListener('click', function () {
+      openModal({
+        kicker: b.dataset.kicker,
+        title:  b.dataset.title,
+        sub:    b.dataset.sub,
+        intent: b.dataset.intent,
+        submit: b.dataset.submit
+      });
+    });
+  });
+
+  /* ── the rest scroll to the footer form, tagged with their source ── */
   $$('[data-intent]').forEach(function (el) {
+    if (el.classList.contains('js-cta')) return;      // handled above
     el.addEventListener('click', function () { $('#leadIntent').value = el.dataset.intent; });
   });
 

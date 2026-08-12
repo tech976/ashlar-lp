@@ -184,9 +184,14 @@ h3 { font-size: 1.1rem; letter-spacing: .2px; line-height: 1.35; }
 .ov-badge span { display: block; margin-top: 4px; font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; opacity: .92; }
 .ov-copy p + p { margin-top: 1.05rem; }
 .ticks { margin-top: 1.5rem; }
-.ticks li { position: relative; padding: .6rem 0 .6rem 2.1rem; font-size: 1.02rem; }
+.ticks li { position: relative; padding: .6rem 0 .6rem 2.1rem; font-size: 1.02rem; line-height: 1.75; }
 .ticks li::before {
-  content: ""; position: absolute; left: 2px; top: 15px; width: 13px; height: 7px;
+  content: ""; position: absolute; left: 2px;
+  /* Sit the tick's ink on the first line's centre: top padding + half a line,
+     minus half the box and the downward bias the -45deg rotation gives the ink.
+     Expressed in em so it holds if the type scale moves again. */
+  top: calc(.6rem + .575em);
+  width: 13px; height: 7px;
   border-left: 2px solid var(--orange); border-bottom: 2px solid var(--orange);
   transform: rotate(-45deg);
 }
