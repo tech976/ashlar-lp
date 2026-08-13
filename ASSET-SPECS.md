@@ -113,8 +113,8 @@ slot order (e.g. `loc-rail.jpg/2.jpg` is the train, `1.jpg` is the school).
 
 | Slot | Source file | Content |
 |---|---|---|
-| `hero-desktop.jpg` | `hero-desktop.jpg/hero-desktop.jpg.jpg` | Composed 16:9 banner |
-| `hero-mobile.jpg` | `900 x 1300/ashalar landing page.jpg` | Composed portrait banner |
+| `hero-desktop.jpg` | `ashalar landing page/hero-desktop.jpg/…1920 x 1080.jpg` | **Green Airy** campaign banner, 16:9 |
+| `hero-mobile.jpg` | `ashalar landing page/900 x 1300/…jpg` | **Green Airy** campaign banner, portrait |
 | `overview.jpg` | `overview.jpg/…-02.jpg` | Tower render at dusk |
 | `overview-2.jpg` | `800 x 600/800 x 600.jpg` | Couple on a balcony |
 | `highlights.jpg` | `highlights.jpg/highlights.jpg` | Aerial site view |
@@ -146,11 +146,16 @@ That is **P51800027667** — not `P51700027399` (A Wing) and not `PR133000260063
 which doesn't name a certificate. The QR images are in place but the pairing to
 "A Wing" / "B Wing" is unverified. **This is a compliance item — confirm before launch.**
 
-**2. The banner contradicts the location table.**
-The hero banner reads "**2 Mins** walk from Titwala railway station". The brief, and
-the Connectivity section built from it, say "**05 Min · 500 M**". Both now appear on
-the same page. 500 m in 2 minutes isn't a walking pace, so the brief looks right —
-but the client should confirm which figure to publish.
+**2. The banner contradicts the location table — now across two campaigns.**
+The original banner said "**2 Mins** walk from Titwala railway station". The replacement
+"Green Airy" banner repeats it: "**Just 2 Mins From Titwala Station**". The brief, and
+the Connectivity section built from it, say "**05 Min · 500 M**" — and both figures are
+visible on the same page.
+
+Two separate creatives now carry the 2-minute claim, so the client clearly intends it.
+The page copy has **not** been changed, because 500 m in 2 minutes is not a walking
+pace and the distance came from the brief. Either the distance or the time needs to
+move. Confirm which, and the Connectivity table and Overview copy get updated together.
 
 **3. Both floor plans are the same drawing type, and neither is a unit plan.**
 `…-17` and `…-18` are both titled "**Refuge Floor Plan (7th, 12th, 17th)**" — whole
