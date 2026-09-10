@@ -11,10 +11,6 @@
     FORM_ENDPOINT: '',
     THANK_YOU_URL: 'thank-you.html',
 
-    // Save what the visitor has typed even if they never press submit, so an
-    // abandoned form still reaches the sheet. 0 disables it.
-    PARTIAL_SAVE_MS: 1500,
-
     // Auto enquiry popup. Set POPUP_DELAY to 0 to switch it off.
     POPUP_DELAY: 3000,
     // false = show on every page load (matches the reference site)
@@ -282,42 +278,26 @@
   });
 
   /* ── lead identity ──────────────────────────────────────────
-     One id per visitor per session. Every partial save and the final submit
-     carry it, so the sheet keeps a single row per lead that fills in as they
-     type rather than a new row per keystroke batch. */
-  var LEAD_KEY = 'ashlar-tattva-lead-id';
-
+     A fresh id per submission. One visitor may enquire more than once in a
+     session — brochure now, floor plan later — and each is a separate lead
+     that sales needs to see, so they must not collapse into one row. The id
+     only guards against the same submission being POSTed twice. */
   function leadId() {
-    try {
-      var v = sessionStorage.getItem(LEAD_KEY);
-      if (!v) {
-        v = 'L' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-        sessionStorage.setItem(LEAD_KEY, v);
-      }
-      return v;
-    } catch (e) {
-      return 'L' + Date.now().toString(36);          // private mode
-    }
+    return 'L' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
   }
 
   /* Apps Script has no CORS preflight handler, so send text/plain — that keeps
      the request "simple" and skips the OPTIONS round trip. The script reads
      e.postData.contents and parses it as JSON either way. */
-  function send(payload, beacon) {
+  function send(payload) {
     if (!CONFIG.FORM_ENDPOINT) {
       console.info('[Ashlar Tattva] no endpoint set, would have sent:', payload);
-      return Promise.resolve();
-    }
-    var body = JSON.stringify(payload);
-    if (beacon && navigator.sendBeacon) {
-      navigator.sendBeacon(CONFIG.FORM_ENDPOINT,
-        new Blob([body], { type: 'text/plain;charset=UTF-8' }));
       return Promise.resolve();
     }
     return fetch(CONFIG.FORM_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
-      body: body,
+      body: JSON.stringify(payload),
       keepalive: true
     });
   }
@@ -332,42 +312,6 @@
     d.referrer = document.referrer || '';
     d.device   = navigator.userAgent;
     return d;
-  }
-
-  /* ── partial saves ──────────────────────────────────────────
-     Fires while the visitor types and again if they leave the page. Only sends
-     once there is something worth keeping, and never re-sends unchanged data. */
-  function watchPartial(form) {
-    if (!CONFIG.PARTIAL_SAVE_MS || !CONFIG.FORM_ENDPOINT) return;
-    var timer = null, lastSig = '', done = false;
-
-    function flush(beacon) {
-      if (done) return;                               // completed, stop nagging
-      var d = snapshot(form);
-      if (!(d.name || d.phone || d.email || d.city)) return;
-      var sig = [d.name, d.phone, d.email, d.city, d.configuration].join('|');
-      if (sig === lastSig) return;
-      lastSig = sig;
-      d.status = 'partial';
-      try { send(d, beacon); } catch (e) {}
-    }
-
-    $$('input, select', form).forEach(function (el) {
-      if (el.type === 'hidden' || el.tabIndex === -1) return;
-      el.addEventListener('input', function () {
-        clearTimeout(timer);
-        timer = setTimeout(flush, CONFIG.PARTIAL_SAVE_MS);
-      });
-      el.addEventListener('blur', function () { clearTimeout(timer); flush(); });
-    });
-
-    // Leaving the page is the last chance to keep an abandoned form.
-    window.addEventListener('pagehide', function () { flush(true); });
-    document.addEventListener('visibilitychange', function () {
-      if (document.visibilityState === 'hidden') flush(true);
-    });
-
-    form.addEventListener('lead:complete', function () { done = true; });
   }
 
   /* ── forms ──────────────────────────────────────────────── */
@@ -436,7 +380,6 @@
       var data = snapshot(form);
       data.status = 'complete';
       data.submitted_at = new Date().toISOString();
-      form.dispatchEvent(new Event('lead:complete'));   // stop partial saves
 
       post(data).then(function () {
         try { sessionStorage.setItem(SENT_KEY, '1'); } catch (e) {}
@@ -452,8 +395,6 @@
       });
     });
   }
-
-  [$('#leadForm'), $('#modalForm')].forEach(function (f) { if (f) watchPartial(f); });
 
   wire($('#leadForm'), $('#formStatus'));
   wire($('#modalForm'), $('#modalStatus'), function () {

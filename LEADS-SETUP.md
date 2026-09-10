@@ -1,8 +1,11 @@
 # Lead capture — setup
 
-Every form on the landing page writes to the Google Sheet and emails
-`sales@ashlarspaces.com`. Two pieces: a script that lives in the sheet, and one
-URL pasted into the site.
+Every **submitted** enquiry on the landing page writes to the Google Sheet and
+emails `sales@ashlarspaces.com`. Two pieces: a script that lives in the sheet,
+and one URL pasted into the site.
+
+Nothing is recorded until the visitor presses submit — half-typed forms are not
+captured.
 
 **Sheet:** <https://docs.google.com/spreadsheets/d/17XOlTBM5gvR7N2DHAWsf8TJOUPuoqgsfjF5kxZsnV3Q/edit>
 
@@ -51,59 +54,35 @@ FORM_ENDPOINT: 'https://script.google.com/macros/s/AKfy……/exec',
 
 Commit and push. That's it — leads start flowing.
 
-## 5. Optional: chase abandoned forms
-
-Emails you when someone starts the form, leaves a phone or email, and never
-finishes.
-
-1. In Apps Script, open the **Triggers** panel (clock icon, left rail).
-2. **Add Trigger** → function `notifyAbandoned` → *Time-driven* → *Hour timer* →
-   *Every hour* → **Save**.
-
-Each abandoned lead is emailed once — the `Notified` column prevents repeats.
-Set `MAIL_ON_ABANDONED = false` at the top of `Code.gs` to turn it off.
-
 ---
 
 ## What lands in the sheet
 
-One **row per lead**, not per request. The row is created the moment someone
-starts typing and fills in as they go, matched on a hidden `Lead ID`. Someone
-who types their name, then their phone, then submits produces **one** row that
-ends up `complete` — not three rows.
+One **row per submitted enquiry**. The same visitor enquiring twice — brochure
+now, floor plan later — is two leads and two rows, because sales needs to see
+both. The hidden `Lead ID` only stops a single submission being recorded twice
+if the browser retries it.
 
 | Column | Notes |
 |---|---|
-| First seen / Last updated | When they started, when they last touched it |
-| **Status** | `partial` = started and left · `complete` = submitted |
+| Received / Last updated | When the enquiry came in |
+| **Status** | Always `complete` — only submitted enquiries are recorded |
 | **Intent** | Which button they came from — `Brochure request`, `Floor plan — 2 BHK`, `Auto popup`, `Site visit`, `Cost sheet`… |
 | Name, Phone, Email, City, Configuration | As entered |
 | Consent | Whether the updates box was ticked |
 | Project, Lead ID, Page, Referrer, Device | Context for attribution |
-| Notified | When sales was emailed — blank means not yet |
-
-**A partial never overwrites a filled field with a blank.** If someone types a
-phone number then clears it, the sheet keeps the number.
+| Notified | When sales was emailed |
 
 ## When email goes out
 
-- **Every completed submission** → immediately, subject `[New Lead] …`
-- **Abandoned forms** → only with the hourly trigger from step 5, subject
-  `[Incomplete] …`, once per lead
-
-Both reply directly to the visitor when they left an email address.
+One email per submitted enquiry, sent immediately, subject
+`[New Lead] Ashlar Tattva — Name · Intent`. It replies straight to the visitor
+when they left an email address. A repeated POST of the same submission does not
+send a second email.
 
 ---
 
-## Two things to be aware of
-
-**Partial capture and consent.** The page saves what a visitor has typed before
-they press submit. That's normal for lead-gen, but under the DPDP Act it is
-personal data collected without an explicit action. Two options if your legal
-team wants it tightened:
-
-- Set `PARTIAL_SAVE_MS: 0` in `main.js` — only completed submissions are stored.
-- Or add a line near the consent checkbox saying details may be saved as entered.
+## One thing to be aware of
 
 **Gmail send limits.** A free Gmail account can send ~100 emails/day from Apps
 Script; Google Workspace allows ~1,500. If the campaign is expected to exceed

@@ -1,13 +1,12 @@
 /**
  * Ashlar Tattva — lead capture
  * ────────────────────────────────────────────────────────────────
- * Receives every form interaction from the landing page, records it in the
- * spreadsheet, and emails the sales inbox when a lead completes.
+ * Receives submitted enquiries from the landing page, records each one in the
+ * spreadsheet, and emails the sales inbox.
  *
- * One ROW PER LEAD, not per request. A visitor who types their name, then
- * their phone, then submits produces a single row that fills in as they go —
- * matched on lead_id. If they abandon halfway, the row survives with
- * status "partial" and whatever they had typed.
+ * One row per submission. The same visitor enquiring twice — brochure now,
+ * floor plan later — is two leads and two rows, because sales needs to see
+ * both. lead_id only guards against the same submission arriving twice.
  *
  * Setup lives in LEADS-SETUP.md in the repo.
  */
@@ -19,16 +18,11 @@ var MAIL_TO    = 'sales@ashlarspaces.com';
 var MAIL_CC    = '';              // optional second recipient
 var PROJECT    = 'Ashlar Tattva';
 
-// Email the sales inbox as soon as a lead completes the form.
+// Email the sales inbox on every submitted enquiry.
 var MAIL_ON_COMPLETE = true;
-// Also chase abandoned forms — only via the optional hourly trigger below,
-// and only when the visitor left a usable phone or email.
-var MAIL_ON_ABANDONED = true;
-// How long a partial must sit untouched before it counts as abandoned.
-var ABANDONED_AFTER_MINUTES = 30;
 
 var HEADERS = [
-  'First seen', 'Last updated', 'Status', 'Intent', 'Name', 'Phone', 'Email',
+  'Received', 'Last updated', 'Status', 'Intent', 'Name', 'Phone', 'Email',
   'City', 'Configuration', 'Consent', 'Project', 'Lead ID', 'Page', 'Referrer',
   'Device', 'Notified'
 ];
@@ -45,7 +39,7 @@ function doPost(e) {
     var result = upsert(data);
 
     if (MAIL_ON_COMPLETE && result.justCompleted) {
-      notify(result.row, 'complete');
+      notify(result.row);
       markNotified(result.sheet, result.rowIndex);
     }
     return reply({ ok: true, lead_id: result.row.lead_id, status: result.row.status });
@@ -93,7 +87,7 @@ function upsert(data) {
 
     // A later partial must never blank a field the visitor already filled.
     var merged = [
-      existing[0] || now,                       // first seen
+      existing[0] || now,                       // received
       now,                                      // last updated
       row.status === 'complete' ? 'complete' : existing[2] || 'partial',
       row.intent        || existing[3],
@@ -128,38 +122,13 @@ function upsert(data) {
   };
 }
 
-/** Hourly trigger: chase forms that were started but never finished. */
-function notifyAbandoned() {
-  if (!MAIL_ON_ABANDONED) return;
-  var sheet = getSheet();
-  var last  = sheet.getLastRow();
-  if (last < 2) return;
-
-  var values = sheet.getRange(2, 1, last - 1, HEADERS.length).getValues();
-  var cutoff = new Date(Date.now() - ABANDONED_AFTER_MINUTES * 60 * 1000);
-
-  for (var i = 0; i < values.length; i++) {
-    var r = toObj(values[i]);
-    if (r.status === 'complete') continue;
-    if (r.notified) continue;
-    if (!r.phone && !r.email) continue;                  // no way to reach them
-    if (!(r.last_updated instanceof Date) || r.last_updated > cutoff) continue;
-
-    notify(r, 'abandoned');
-    markNotified(sheet, i + 2);
-  }
-}
-
 // ── email ───────────────────────────────────────────────────────
-function notify(r, kind) {
-  var abandoned = kind === 'abandoned';
-  var subject = (abandoned ? '[Incomplete] ' : '[New Lead] ') + PROJECT + ' — ' +
+function notify(r) {
+  var subject = '[New Lead] ' + PROJECT + ' — ' +
                 (r.name || r.phone || r.email || 'unnamed') +
                 (r.intent ? ' · ' + r.intent : '');
 
-  var intro = abandoned
-    ? 'Someone started the enquiry form and left without finishing. These are the details they had entered — worth a call.'
-    : 'A new enquiry has come in from the Ashlar Tattva landing page.';
+  var intro = 'A new enquiry has come in from the Ashlar Tattva landing page.';
 
   var rows = [
     ['Name',          r.name],
@@ -169,7 +138,7 @@ function notify(r, kind) {
     ['Configuration', r.configuration],
     ['Came from',     r.intent],
     ['Consent',       r.consent],
-    ['Received',      fmt(r.first_seen)],
+    ['Received',      fmt(r.received)],
     ['Page',          r.page]
   ];
 
@@ -179,9 +148,8 @@ function notify(r, kind) {
 
   var html =
     '<div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;color:#333">' +
-      '<p style="margin:0 0 4px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:' +
-        (abandoned ? '#a8500d' : '#16494d') + '">' +
-        (abandoned ? 'Incomplete enquiry' : 'New lead') + '</p>' +
+      '<p style="margin:0 0 4px;font-size:12px;letter-spacing:.12em;' +
+        'text-transform:uppercase;color:#16494d">New lead</p>' +
       '<h2 style="margin:0 0 12px;color:#16494d;font-size:20px">' + esc(PROJECT) + '</h2>' +
       '<p style="margin:0 0 16px;font-size:14px;line-height:1.6">' + esc(intro) + '</p>' +
       '<table cellpadding="0" cellspacing="0" style="width:100%;font-size:14px;border-collapse:collapse">' +
@@ -237,7 +205,7 @@ function markNotified(sheet, rowIndex) {
 
 function toObj(a) {
   return {
-    first_seen: a[0], last_updated: a[1], status: a[2], intent: a[3], name: a[4],
+    received: a[0], last_updated: a[1], status: a[2], intent: a[3], name: a[4],
     phone: a[5], email: a[6], city: a[7], configuration: a[8], consent: a[9],
     project: a[10], lead_id: a[11], page: a[12], referrer: a[13], device: a[14],
     notified: a[15]
