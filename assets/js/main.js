@@ -377,28 +377,67 @@
       btn.disabled = true;
       btn.textContent = 'Submitting…';
 
+      function restore() {
+        btn.disabled = false;
+        btn.textContent = label;
+      }
+
       var data = snapshot(form);
       data.status = 'complete';
       data.submitted_at = new Date().toISOString();
 
       post(data).then(function () {
         try { sessionStorage.setItem(SENT_KEY, '1'); } catch (e) {}
+
+        // done() decides what happens next. If it returns true it has handled
+        // the outcome itself — the floor-plan unlock reveals the plan in place,
+        // which only works if we stay on the page. Anything else redirects.
+        var handled = typeof done === 'function' && done(data) === true;
+        if (handled) {
+          // the dialog is reused (the other plan, a later CTA) — hand it back usable
+          restore();
+          form.reset();
+          $$('input.bad', form).forEach(function (i) { mark(i, ''); });
+          if (status) { status.textContent = ''; status.className = 'status'; }
+          return;
+        }
+
         if (status) { status.textContent = 'Thank you — redirecting…'; status.className = 'status good'; }
-        if (typeof done === 'function') done(data);
         location.href = CONFIG.THANK_YOU_URL +
           '?intent=' + encodeURIComponent(data.intent || '') +
           '&name='   + encodeURIComponent((data.name || '').split(' ')[0]);
       }).catch(function () {
-        btn.disabled = false;
-        btn.textContent = label;
+        restore();
         if (status) { status.textContent = 'Something went wrong. Please call 911 911 7582.'; status.className = 'status fail'; }
       });
     });
   }
 
   wire($('#leadForm'), $('#formStatus'));
+
+  /* The modal serves two jobs. A floor-plan unlock has something to show on
+     this page, so it lifts the blur, closes the dialog and scrolls the plan
+     into view — redirecting would throw away the thing they just asked for.
+     Every other modal enquiry has nothing to reveal, so it goes to the
+     thank-you page as before. Returning true means "handled, do not redirect". */
   wire($('#modalForm'), $('#modalStatus'), function () {
-    if (pendingPlan) pendingPlan.classList.add('open');
+    if (!pendingPlan) return false;
+
+    var card = pendingPlan;
+    card.classList.add('open');
+
+    var btn = $('.js-unlock', card);
+    if (btn) {
+      btn.textContent = 'Floor Plan Unlocked';
+      btn.disabled = true;
+      btn.classList.add('is-open');
+    }
+
+    closeModal();
+    pendingPlan = null;
+
+    card.scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: 'center' });
+    return true;
   });
 
   /* ── misc ───────────────────────────────────────────────── */

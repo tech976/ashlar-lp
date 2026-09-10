@@ -265,6 +265,8 @@ h3 { font-size: 1.1rem; letter-spacing: .2px; line-height: 1.35; }
 .plan-lock svg { width: 36px; height: 36px; }
 .plan.open .plan-img img { filter: none; transform: none; }
 .plan.open .plan-lock { display: none; }
+/* the unlock button after it has done its job — still readable, clearly spent */
+.plan > .btn.is-open, .plan > .btn.is-open:hover { background: var(--surface-cool); border-color: var(--line); color: var(--mute-2); cursor: default; box-shadow: none; }
 
 .plan-spec { padding: .3rem 1.5rem 1.35rem; }
 .plan-spec > div { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: .82rem 0; border-bottom: 1px solid var(--line); }
