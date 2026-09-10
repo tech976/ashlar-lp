@@ -8,7 +8,7 @@
   var CONFIG = {
     // Google Apps Script web-app URL (see LEADS-SETUP.md). Empty = no network
     // call; forms still validate, log and redirect, so the flow stays demo-able.
-    FORM_ENDPOINT: '',
+    FORM_ENDPOINT: 'https://script.google.com/macros/s/AKfycbzzmOPdp0k03oSFAqqX4wmKn26mBSEPyj12Pq0DuhCErToCrkmDmjHZqNyavn0uPHU9CQ/exec',
     THANK_YOU_URL: 'thank-you.html',
 
     // Auto enquiry popup. Set POPUP_DELAY to 0 to switch it off.
